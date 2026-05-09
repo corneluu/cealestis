@@ -5,6 +5,7 @@ import type { Song, Voice } from './songs';
 import logo from './assets/logo.png';
 import { useLang, type AppLang } from './i18n';
 import { useDarkMode } from './useDarkMode';
+import { updateHistory } from './history';
 
 // ─── UTILS ──────────────────────────────────────────────────────────────────
 const assetUrl = (path: string) => `${import.meta.env.BASE_URL}${path.replace(/^\//, '')}`;
@@ -304,7 +305,9 @@ export default function App() {
 
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
   const [showNetworkModal, setShowNetworkModal] = useState(false);
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [showBackToTop, setShowBackToTop] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
 
   const handleTelemetry = (action: string, songName: string, typeStr: string) => {
     sendDiscordTelemetry(action, songName, typeStr);
@@ -331,7 +334,10 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    const handleScroll = () => setShowBackToTop(window.scrollY > 300);
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 40);
+      setShowBackToTop(window.scrollY > 300);
+    };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -381,7 +387,7 @@ export default function App() {
   };
 
   useEffect(() => {
-    if (pdfModalId || audioModalId) {
+    if (pdfModalId || audioModalId || showHistoryModal) {
       document.body.style.overflow = 'hidden';
       document.documentElement.style.overflow = 'hidden';
     } else {
@@ -393,6 +399,7 @@ export default function App() {
       if (e.key === 'Escape') {
         setPdfModalId(null);
         setAudioModalId(null);
+        setShowHistoryModal(false);
       }
     };
     document.addEventListener('keydown', onEsc);
@@ -400,13 +407,30 @@ export default function App() {
       document.body.style.overflow = '';
       document.removeEventListener('keydown', onEsc);
     };
-  }, [pdfModalId, audioModalId]);
+  }, [pdfModalId, audioModalId, showHistoryModal]);
 
   return (
     <div className="min-h-screen bg-[var(--bg)] font-sans pb-20 transition-colors">
-      <header className="sticky top-0 z-40 bg-[var(--bg)]/95 backdrop-blur-sm border-b border-[var(--track)] transition-colors shadow-sm">
-        <div className="max-w-[640px] mx-auto px-4 py-3 sm:py-4">
-          <div className="flex flex-row items-center justify-between gap-3 mb-2">
+      <header className={`sticky top-0 z-40 bg-[var(--bg)]/95 backdrop-blur-sm border-b border-[var(--track)] transition-all duration-500 shadow-sm ${
+        isScrolled ? 'max-md:landscape:-translate-y-full' : ''
+      }`}>
+        <div className="max-w-[640px] mx-auto px-4 py-2 sm:py-4">
+          
+          {/* TOP SMALL NOTICE - Relocated here */}
+          <div className={`flex justify-center mb-2 transition-all duration-300 ${
+            isScrolled ? 'h-0 opacity-0 overflow-hidden mb-0' : 'h-auto'
+          }`}>
+            <button
+              onClick={() => setShowHistoryModal(true)}
+              className="text-[9px] sm:text-[10px] text-[var(--muted)] hover:text-[var(--text)] transition-all bg-[var(--track)]/40 hover:bg-[var(--track)] px-2.5 py-1 rounded-full font-medium uppercase tracking-wider"
+            >
+              {t('lastUpdate')} <span className="font-bold">{updateHistory.lastUpdate}</span> · <span className="underline decoration-dotted underline-offset-2">{t('viewChanges')}</span>
+            </button>
+          </div>
+
+          <div className={`flex flex-row items-center justify-between gap-3 transition-all duration-500 ${
+            isScrolled ? 'max-md:portrait:h-0 max-md:portrait:opacity-0 max-md:portrait:overflow-hidden max-md:portrait:mb-0 mb-2' : 'mb-2'
+          }`}>
             <div className="flex items-center gap-3">
               <img
                 src={logo}
@@ -446,7 +470,7 @@ export default function App() {
             </div>
           </div>
 
-          <div className="flex items-center mt-3">
+          <div className="flex items-center mt-1 sm:mt-3">
             <input
               type="text"
               value={search}
@@ -456,7 +480,7 @@ export default function App() {
             />
           </div>
 
-          <div className="flex flex-wrap gap-2 mt-3 pb-1">
+          <div className="flex flex-wrap gap-2 mt-2 sm:mt-3 pb-1 overflow-x-auto no-scrollbar whitespace-nowrap">
             <button
               onClick={() => setSelectedComposer(null)}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${!selectedComposer ? 'bg-[var(--text)] text-[var(--bg)] shadow-md' : 'bg-[var(--card)] text-[var(--text)] border border-[var(--track)] hover:border-[var(--muted)]'}`}
@@ -500,10 +524,9 @@ export default function App() {
       </main>
 
       {/* FOOTER SIGNATURE */}
-      <footer className="mt-8 sm:mt-12 pb-6 text-center">
+      <footer className="mt-8 sm:mt-12 pb-10 text-center flex flex-col items-center gap-4">
         <a
           href="https://corneluu.github.io/corneluu/"
-          target="_blank"
           rel="noopener noreferrer"
           className="inline-block text-[10px] text-[var(--muted)] hover:text-[var(--text)] uppercase tracking-[0.1em] transition-all opacity-60 hover:opacity-100 font-medium"
         >
@@ -651,6 +674,112 @@ export default function App() {
                 className="w-full py-3 rounded-xl bg-[var(--text)] hover:opacity-90 text-[var(--bg)] font-bold text-[15px] transition-all shadow-md active:scale-[0.98]"
               >
                 {t('offlineConfirm')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* HISTORY MODAL */}
+      {showHistoryModal && (
+        <div 
+          className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6"
+          onClick={() => setShowHistoryModal(false)}
+        >
+          <div 
+            className="bg-[var(--bg)] border border-[var(--track)] rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl relative overflow-hidden"
+            onClick={e => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-4 sm:p-5 border-b border-[var(--track)]">
+              <div>
+                <h3 className="text-lg sm:text-xl font-bold text-[var(--text)] leading-tight">
+                  {t('historyTitle')}
+                </h3>
+              </div>
+              <button 
+                onClick={() => setShowHistoryModal(false)} 
+                className="p-2 text-[var(--muted)] hover:text-red-500 hover:bg-[var(--track)] rounded-full transition-all"
+              >
+                <X size={24} />
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 custom-scrollbar">
+              <p className="text-[14px] text-[var(--muted)] mb-6 leading-relaxed">
+                {t('historyDesc')}
+              </p>
+
+              {/* PDFs Section */}
+              <div className="mb-8">
+                <h4 className="flex items-center gap-2 text-base font-bold text-[var(--text)] mb-4">
+                  <span role="img" aria-label="pdf">📄</span> PDF-uri
+                </h4>
+                <div className="overflow-x-auto -mx-4 sm:mx-0">
+                  <table className="w-full text-left border-collapse min-w-[500px] sm:min-w-0">
+                    <thead>
+                      <tr className="border-b border-[var(--track)]">
+                        <th className="py-2 px-4 text-[12px] uppercase tracking-wider text-[var(--muted)] font-bold">{t('file')}</th>
+                        <th className="py-2 px-4 text-[12px] uppercase tracking-wider text-[var(--muted)] font-bold w-24 sm:w-32">{t('date')}</th>
+                        <th className="py-2 px-4 text-[12px] uppercase tracking-wider text-[var(--muted)] font-bold">{t('change')}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {updateHistory.pdfs.map((item, i) => (
+                        <tr key={i} className="border-b border-[var(--track)]/50 hover:bg-[var(--track)]/30 transition-colors">
+                          <td className="py-3 px-4 text-[14px]">
+                            <a href={assetUrl(item.url)} target="_blank" rel="noopener noreferrer" className="text-[var(--accent)] font-semibold hover:underline">
+                              {item.name}
+                            </a>
+                          </td>
+                          <td className="py-3 px-4 text-[13px] text-[var(--muted)] whitespace-nowrap">{item.date}</td>
+                          <td className="py-3 px-4 text-[13px] text-[var(--text)]">{item.change}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Audio Section */}
+              <div>
+                <h4 className="flex items-center gap-2 text-base font-bold text-[var(--text)] mb-4">
+                  <span role="img" aria-label="audio">🎵</span> Audio
+                </h4>
+                <div className="overflow-x-auto -mx-4 sm:mx-0">
+                  <table className="w-full text-left border-collapse min-w-[500px] sm:min-w-0">
+                    <thead>
+                      <tr className="border-b border-[var(--track)]">
+                        <th className="py-2 px-4 text-[12px] uppercase tracking-wider text-[var(--muted)] font-bold">{t('file')}</th>
+                        <th className="py-2 px-4 text-[12px] uppercase tracking-wider text-[var(--muted)] font-bold w-24 sm:w-32">{t('date')}</th>
+                        <th className="py-2 px-4 text-[12px] uppercase tracking-wider text-[var(--muted)] font-bold">{t('change')}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {updateHistory.audio.map((item, i) => (
+                        <tr key={i} className="border-b border-[var(--track)]/50 hover:bg-[var(--track)]/30 transition-colors">
+                          <td className="py-3 px-4 text-[14px]">
+                            <a href={assetUrl(item.url)} target="_blank" rel="noopener noreferrer" className="text-[var(--accent)] font-semibold hover:underline">
+                              {item.name}
+                            </a>
+                          </td>
+                          <td className="py-3 px-4 text-[13px] text-[var(--muted)] whitespace-nowrap">{item.date}</td>
+                          <td className="py-3 px-4 text-[13px] text-[var(--text)]">{item.change}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-4 sm:p-5 border-t border-[var(--track)] bg-[var(--card)] flex justify-end">
+              <button
+                onClick={() => setShowHistoryModal(false)}
+                className="px-6 py-2 rounded-xl bg-[var(--text)] hover:opacity-90 text-[var(--bg)] font-bold text-[14px] transition-all shadow-md active:scale-[0.98]"
+              >
+                {t('close')}
               </button>
             </div>
           </div>

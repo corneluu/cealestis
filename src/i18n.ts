@@ -25,6 +25,13 @@ export const i18n = {
     offlineConfirm: "Am înțeles",
     youtube: "YouTube",
     all: "Toate",
+    lastUpdate: "Revizuit pe",
+    viewChanges: "vezi modificările",
+    historyTitle: "Istoric modificări",
+    historyDesc: "Aici găsești toate fișierele actualizate recent. Click pe orice fișier pentru a-l deschide.",
+    file: "Fișier",
+    date: "Data modificării",
+    change: "Ce s-a schimbat",
   },
   en: {
     portalSubtitle: "OFFICIAL SCORES",
@@ -50,6 +57,13 @@ export const i18n = {
     offlineConfirm: "Got it",
     youtube: "YouTube",
     all: "All",
+    lastUpdate: "Revised on",
+    viewChanges: "view changes",
+    historyTitle: "Change History",
+    historyDesc: "Here you can find all recently updated files. Click on any file to open it.",
+    file: "File",
+    date: "Modification Date",
+    change: "What changed",
   },
   it: {
     portalSubtitle: "SPARTITI UFFICIALI",
@@ -75,6 +89,13 @@ export const i18n = {
     offlineConfirm: "Ho capito",
     youtube: "YouTube",
     all: "Tutti",
+    lastUpdate: "Revisionato il",
+    viewChanges: "vedi modifiche",
+    historyTitle: "Cronologia modifiche",
+    historyDesc: "Qui puoi trovare tutti i file aggiornati di recente. Clicca su qualsiasi file per aprirlo.",
+    file: "File",
+    date: "Data modifica",
+    change: "Cosa è cambiato",
   }
 } as const;
 
