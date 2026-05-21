@@ -111,7 +111,7 @@ function AudioPlayer({ songId, voice, path, playingId, onPlay, onDownload, onSha
   const ext = path.split('.').pop() ?? 'mp3';
 
   return (
-    <div className="flex flex-row items-center gap-4 w-full h-[42px] bg-[var(--bg)] border border-[var(--track)] rounded-full px-3 mt-4 shadow-sm">
+    <div className="player-bar flex flex-row items-center gap-4 w-full h-[42px] px-3 mt-4">
       <audio
         ref={audioRef}
         src={fullUrl}
@@ -123,18 +123,18 @@ function AudioPlayer({ songId, voice, path, playingId, onPlay, onDownload, onSha
 
       <button
         onClick={togglePlay}
-        className="flex-shrink-0 flex items-center justify-center rounded-full bg-[var(--accent)] text-[#0a0f0c] dark:text-[#0a0f0c] w-[26px] h-[26px] shadow-sm hover:opacity-90 transition-opacity"
+        className="play-btn-icon flex-shrink-0 flex items-center justify-center rounded-full w-[26px] h-[26px] shadow-sm hover:opacity-90 transition-opacity"
       >
         {isPlaying ? <Pause size={14} fill="currentColor" /> : <Play size={14} className="ml-[1px]" fill="currentColor" />}
       </button>
 
       <div className="flex-1 relative flex items-center h-7 cursor-pointer group" onClick={handleSeek}>
-        <div className="absolute inset-x-0 h-[8px] group-hover:h-[10px] bg-[var(--track)] rounded-full overflow-hidden transition-all">
-          <div className="h-full bg-[var(--accent)] transition-all ease-linear" style={{ width: `${progress}%` }} />
+        <div className="progress-track absolute inset-x-0 overflow-hidden transition-all group-hover:scale-y-110">
+          <div className="progress-fill h-full transition-all ease-linear" style={{ width: `${progress}%` }} />
         </div>
       </div>
 
-      <div className="tabular-nums text-[var(--muted)] text-right flex-shrink-0 tracking-tight whitespace-nowrap text-[12px] font-medium w-[72px]">
+      <div className="time-text tabular-nums text-right flex-shrink-0 tracking-tight whitespace-nowrap text-[12px] font-medium w-[72px]">
         <span>{formatTime(currentTime)}</span>
         <span> / {formatTime(duration)}</span>
       </div>
@@ -145,13 +145,13 @@ function AudioPlayer({ songId, voice, path, playingId, onPlay, onDownload, onSha
             onDownload(fullUrl, `${songId}-${voice}.${ext}`);
             onTelemetry("💾 Descărcare Audio", `${ext.toUpperCase()} - ${voice}`);
           }}
-          className="flex items-center justify-center sm:px-2.5 sm:py-1 rounded max-sm:p-1 max-sm:text-[var(--muted)] max-sm:hover:text-[var(--text)] sm:bg-[var(--track)] sm:text-[var(--text)] sm:hover:bg-[var(--text)] sm:hover:text-[var(--bg)] transition-all font-medium"
+          className="btn-download flex items-center justify-center px-2.5 py-1"
           title={t('download')}
         >
           <Download size={14} className="sm:mr-1.5" />
           <span className="hidden sm:inline text-[11px] uppercase tracking-wide">{t('download')}</span>
         </button>
-        <button onClick={() => { onShare(songId, voice); onTelemetry("🔗 Distribuire", `Link Audio (${voice})`); }} className="p-1.5 sm:p-2 text-[var(--muted)] hover:text-[var(--text)] hover:bg-[var(--track)] rounded-full transition-all">
+        <button onClick={() => { onShare(songId, voice); onTelemetry("🔗 Distribuire", `Link Audio (${voice})`); }} className="share-icon p-1.5 sm:p-2 rounded-full transition-all">
           <Share2 size={14} />
         </button>
       </div>
@@ -202,12 +202,11 @@ function SongItem({ song, playingId, onPlay, lang, onOpenPdf, onOpenAudio, onSha
 
   return (
     <div
-      className={`py-5 border-b border-[var(--track)] last:border-0 transition-colors duration-1000 p-2 -mx-2 rounded-xl ${isHighlighted ? 'bg-[var(--highlight)]' : 'bg-transparent'
-        }`}
+      className={`song-card py-5 transition-colors duration-1000 p-4 mb-4 ${isHighlighted ? 'bg-[var(--highlight)]' : ''}`}
       id={`song-${song.id}`}
     >
       {/* Title & Composer exactly like the image */}
-      <div className="mb-4 px-2">
+      <div className="mb-4">
         <h2 className="text-[17px] sm:text-lg font-semibold text-[var(--text)] leading-tight">
           {song.title} <span className="font-normal text-[var(--muted)]">— {song.composer}</span>
         </h2>
@@ -221,10 +220,7 @@ function SongItem({ song, playingId, onPlay, lang, onOpenPdf, onOpenAudio, onSha
             <button
               key={v}
               onClick={() => setActiveVoice(v)}
-              className={`px-4 py-1.5 rounded-lg text-[13px] font-semibold transition-all border ${isActive
-                ? 'bg-[var(--text)] text-[var(--bg)] border-[var(--text)] shadow-sm'
-                : 'bg-[var(--card)] text-[var(--text)] border-[var(--track)] hover:border-[var(--muted)]'
-                }`}
+              className={`voice-pill px-4 py-1.5 transition-all ${isActive ? 'active' : ''}`}
             >
               {t(v)}
             </button>
@@ -258,7 +254,7 @@ function SongItem({ song, playingId, onPlay, lang, onOpenPdf, onOpenAudio, onSha
         )}
       </div>
 
-      <div className="px-2 w-full">
+      <div className="w-full mt-2">
         <AudioPlayer
           songId={song.id}
           voice={activeVoice}
@@ -273,14 +269,14 @@ function SongItem({ song, playingId, onPlay, lang, onOpenPdf, onOpenAudio, onSha
       </div>
 
       {/* Partitură Button (Full width like image) */}
-      <div className="px-2 mt-4">
+      <div className="mt-4">
         {song.hasScore && (
           <button
             onClick={() => {
               onOpenPdf(song.id);
               onTelemetry("📂 Fișier Deschis", song.title, "PDF");
             }}
-            className="w-full flex items-center justify-center gap-2 py-3 bg-[var(--text)] text-[var(--bg)] hover:opacity-90 font-semibold rounded-full text-[14px] transition-opacity shadow-md"
+            className="btn-score w-full flex items-center justify-center gap-2 py-3 text-[14px]"
           >
             <FileText size={16} />
             {t('viewScore')}
@@ -429,27 +425,13 @@ export default function App() {
   }, [pdfModalId, audioModalId, showHistoryModal]);
 
   return (
-    <div className="min-h-screen bg-[var(--bg)] font-sans pb-20 transition-colors">
-      <header className={`sticky top-0 z-40 bg-[var(--bg)]/95 backdrop-blur-sm border-b border-[var(--track)] transition-all duration-500 shadow-sm ${
+    <div className="min-h-screen bg-[var(--bg-body)] font-sans pb-20 transition-colors">
+      <header className={`sticky top-0 z-40 transition-all duration-500 shadow-sm ${
         isScrolled ? 'max-md:landscape:-translate-y-full' : ''
       }`}>
         <div className="max-w-[640px] mx-auto px-4 py-2 sm:py-4">
           
-          {/* TOP SMALL NOTICE - Relocated here */}
-          <div className={`flex justify-center mb-2 transition-all duration-300 ${
-            isScrolled ? 'h-0 opacity-0 overflow-hidden mb-0' : 'h-auto'
-          }`}>
-            <button
-              onClick={() => {
-                setShowHistoryModal(true);
-                handleTelemetry("📜 Deschidere Istoric", "General", "Update Notice");
-              }}
-              className="text-[9px] sm:text-[10px] text-[var(--muted)] hover:text-[var(--text)] transition-all bg-[var(--track)]/40 hover:bg-[var(--track)] px-2.5 py-1 rounded-full font-medium uppercase tracking-wider"
-            >
 
-              {t('lastUpdate')} <span className="font-bold">{updateHistory.lastUpdate}</span> · <span className="underline decoration-dotted underline-offset-2">{t('viewChanges')}</span>
-            </button>
-          </div>
 
           <div className={`flex flex-row items-center justify-between gap-3 transition-all duration-500 ${
             isScrolled ? 'max-md:portrait:h-0 max-md:portrait:opacity-0 max-md:portrait:overflow-hidden max-md:portrait:mb-0 mb-2' : 'mb-2'
@@ -462,10 +444,10 @@ export default function App() {
                 onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
               />
               <div>
-                <h1 className="font-serif text-xl font-bold text-[var(--text)] leading-none mb-0.5">
-                  Întâlnirea Corurilor
+                <h1 className="font-serif text-xl font-bold leading-none mb-0.5">
+                  Cealestis
                 </h1>
-                <p className="text-[10px] uppercase tracking-[0.2em] text-[var(--muted)] font-semibold">
+                <p className="text-[10px] uppercase tracking-[0.2em] font-semibold uppercase">
                   {t('portalSubtitle')}
                 </p>
               </div>
@@ -474,7 +456,7 @@ export default function App() {
             <div className="flex items-center gap-3 sm:gap-4">
               <button
                 onClick={toggleTheme}
-                className="p-1 text-[var(--muted)] hover:text-[var(--text)] transition-colors bg-[var(--track)] rounded-full"
+                className="theme-toggle p-1 rounded-full transition-colors"
               >
                 {theme === 'dark' ? <Sun size={16} className="m-1" /> : <Moon size={16} className="m-1" />}
               </button>
@@ -484,7 +466,7 @@ export default function App() {
                   <button
                     key={l}
                     onClick={() => setLang(l)}
-                    className={`uppercase transition-colors ${lang === l ? 'font-bold text-[var(--text)] border-b-2 border-[var(--text)] pb-0.5' : 'text-[var(--muted)] hover:text-[var(--text)] pb-[2px]'}`}
+                    className={`lang-switch uppercase transition-colors pb-0.5 ${lang === l ? 'active' : ''}`}
                   >
                     {l}
                   </button>
@@ -499,14 +481,14 @@ export default function App() {
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder={t('searchPlaceholder')}
-              className="w-full h-10 bg-[var(--card)] border border-[var(--track)] rounded-xl px-4 text-[15px] outline-none focus:border-[var(--accent)] text-[var(--text)] transition-all placeholder-[var(--muted)] shadow-sm"
+              className="search-input w-full h-10 px-4 text-[15px] outline-none transition-all shadow-sm"
             />
           </div>
 
           <div className="flex flex-wrap gap-2 mt-2 sm:mt-3 pb-1 overflow-x-auto no-scrollbar whitespace-nowrap">
             <button
               onClick={() => setSelectedComposer(null)}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${!selectedComposer ? 'bg-[var(--text)] text-[var(--bg)] shadow-md' : 'bg-[var(--card)] text-[var(--text)] border border-[var(--track)] hover:border-[var(--muted)]'}`}
+              className={`voice-pill px-3 py-1.5 transition-all ${!selectedComposer ? 'active' : ''}`}
             >
               {t('all')}
             </button>
@@ -514,7 +496,7 @@ export default function App() {
               <button
                 key={c}
                 onClick={() => setSelectedComposer(c)}
-                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${selectedComposer === c ? 'bg-[var(--text)] text-[var(--bg)] shadow-md' : 'bg-[var(--card)] text-[var(--text)] border border-[var(--track)] hover:border-[var(--muted)]'}`}
+                className={`voice-pill px-3 py-1.5 transition-all ${selectedComposer === c ? 'active' : ''}`}
               >
                 {c}
               </button>

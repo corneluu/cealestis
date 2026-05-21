@@ -7,27 +7,74 @@
 }
 
 :root {
-  --bg: #F8FAFC;       /* Warm formal white/slate-50 */
-  --card: #FFFFFF;     /* Pure white for cards */
-  --text: #1E293B;     /* Formal slate-800 */
-  --muted: #64748B;    /* Slate-500 */
-  --accent: #0284C7;   /* Sky-600 - Joyful, hopeful but formal */
-  --track: #E2E8F0;    /* Slate-200 */
-  --highlight: #BAE6FD; /* Sky-200 - Brighter and more punchy light blue */
+  /* PRIMARY — your required color */
+  --primary: #2746F5;
+  --primary-hover: #1d3bd7;
+  --primary-light: rgba(39, 70, 245, 0.12);
+  --primary-soft: #EEF1FE;
+
+  /* LIGHT MODE — cleaner, warmer, better hierarchy */
+  --bg-body: #E8EEFF;           /* Blue-ish background for light mode */
+  --bg-card: #FFFFFF;
+  --bg-input: #FFFFFF;
+  --bg-pill: #FFFFFF;
+  --bg-player: #FFFFFF;
+  --bg-button-secondary: #E8EEFF;  /* A clearer, more intentional light blue */
+  --bg-button-secondary-hover: #DCE5FF;
+  --bg-button-secondary-active: #C8D6FF;
+  --text-button-secondary: var(--primary); /* Blue text so it pops! */
+  
+  --text-heading: #0B0F1F;      /* Rich near-black, not pure black */
+  --text-body: #3E4558;         /* Softer than pure black for readability */
+  --text-muted: #6B7289;        /* Clear hierarchy without being too faint */
+  --text-on-primary: #FFFFFF;
+  --text-placeholder: #9AA3B8;
+  
+  --border-default: #E2E5F0;    /* Visible but subtle */
+  --border-subtle: #F1F3F9;
+  --shadow: 0 1px 3px rgba(11, 15, 31, 0.04), 0 4px 12px rgba(11, 15, 31, 0.06);
+  
+  --progress-track: #E2E5F0;
+  --progress-fill: var(--primary);
+  
+  /* Tailwind legacy fallbacks just in case */
+  --bg: var(--bg-body);
+  --card: var(--bg-card);
+  --text: var(--text-body);
+  --muted: var(--text-muted);
+  --accent: var(--primary);
+  --track: var(--progress-track);
+  --highlight: var(--primary-light);
 }
 
-.dark {
-  --bg: #0A1128;       /* Rich navy / bleumarin bogat */
-  --card: #121833;     /* Elevated rich navy */
-  --text: #F8FAFC;     /* Crisp white text */
-  --muted: #94A3B8;    /* Slate-400 */
-  --accent: #38BDF8;   /* Bright cyan/sky-400 for contrast and life */
-  --track: #1E293B;    /* Slate-800 */
-  --highlight: #1D4ED8; /* Blue-700 - Significantly lighter and more vibrant royal blue for dark mode */
+.dark, [data-theme="dark"] {
+  /* DARK MODE — richer, better contrast between layers */
+  --bg-body: #0B0F1F;           /* Deep navy, not muddy purple-blue */
+  --bg-card: #151B2E;           /* Clearly lighter than body */
+  --bg-input: #151B2E;
+  --bg-pill: #1C2340;
+  --bg-player: #151B2E;
+  --bg-button-secondary: #F0F2FA;  /* White-ish as requested for dark mode */
+  --bg-button-secondary-hover: #FFFFFF;
+  --bg-button-secondary-active: #E2E5F0;
+  --text-button-secondary: #0B0F1F; /* Dark text to be readable on white-ish button */
+  
+  --text-heading: #F0F2FA;      /* Crisp white with a hint of blue */
+  --text-body: #C8CDE0;         /* Was too dim; now readable */
+  --text-muted: #7E85A3;        /* Muted but not invisible */
+  --text-on-primary: #FFFFFF;
+  --text-placeholder: #4A5270;
+  
+  --border-default: #252D4A;    /* Visible borders define shapes in dark mode */
+  --border-subtle: #1A2038;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.3);
+  
+  --progress-track: #252D4A;
+  --progress-fill: #4B6BFF;      /* Slightly lighter primary for dark mode pop */
 }
 
 .dark img[alt="Logo"] {
-  filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.3));
+  filter: drop-shadow(0 0 10px rgba(75, 107, 255, 0.5));
 }
 
 html {
@@ -35,11 +82,150 @@ html {
 }
 
 body {
-  background-color: var(--bg);
-  color: var(--text);
+  background-color: var(--bg-body) !important;
+  color: var(--text-body) !important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+/* ─── SEMANTIC COMPONENT CLASSES ─────────────────────────────────────────── */
+
+/* Header */
+header {
+  background-color: var(--bg-body) !important;
+  border-bottom: 1px solid var(--border-default) !important;
+}
+header h1 {
+  color: var(--text-heading) !important;
+}
+
+/* Cards */
+.song-card {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-default) !important; /* Use borders, not just shadows */
+  border-radius: 16px !important;
+  box-shadow: var(--shadow) !important;
+}
+
+/* Search Bar */
+.search-input {
+  background: var(--bg-input) !important;
+  border: 1px solid var(--border-default) !important;
+  color: var(--text-body) !important;
+  border-radius: 12px !important;
+}
+.search-input::placeholder {
+  color: var(--text-placeholder) !important;
+}
+
+/* Voice Pills */
+.voice-pill {
+  background: var(--bg-pill) !important;
+  border: 1px solid var(--border-default) !important;
+  color: var(--text-muted) !important;
+  border-radius: 8px !important;
+  font-weight: 500 !important;
+}
+.voice-pill.active {
+  background: var(--primary) !important;
+  border-color: var(--primary) !important;
+  color: var(--text-on-primary) !important;
+  box-shadow: 0 2px 8px var(--primary-light) !important;
+}
+
+/* Audio Player Bar */
+.player-bar {
+  background: var(--bg-player) !important;
+  border: 1px solid var(--border-default) !important;
+  border-radius: 50px !important; /* Pill shape */
+  box-shadow: none !important; /* Shadow inside a card looks messy; use border instead */
+}
+
+/* Progress Bar */
+.progress-track {
+  background: var(--progress-track) !important;
+  border-radius: 4px !important;
+  height: 6px !important;
+}
+.progress-fill {
+  background: var(--progress-fill) !important;
+  border-radius: 4px !important;
+}
+
+/* "Vezi Partitură" Button */
+.btn-score {
+  background: var(--bg-button-secondary) !important;
+  color: var(--text-button-secondary) !important;
+  border: 1px solid var(--primary-light) !important; /* Soft blue border */
+  border-radius: 12px !important;
+  font-weight: 600 !important;
+  transition: all 0.2s ease !important;
+}
+
+.btn-score:hover {
+  background: var(--bg-button-secondary-hover) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 0 16px rgba(39, 70, 245, 0.35), 0 0 32px rgba(39, 70, 245, 0.15) !important;
+}
+
+.btn-score:active {
+  background: var(--bg-button-secondary-active) !important;
+  transform: translateY(1px) !important;
+  box-shadow: none !important;
+}
+
+/* "DESCARCĂ" Button */
+.btn-download {
+  background: transparent !important;
+  color: var(--text-muted) !important;
+  border: 1px solid var(--border-default) !important;
+  border-radius: 8px !important;
+  font-size: 0.85rem !important;
+  font-weight: 500 !important;
+  transition: all 0.2s ease !important;
+}
+.btn-download:hover {
+  background: var(--primary-light) !important;
+  color: var(--primary) !important;
+  border-color: var(--primary-light) !important;
+}
+
+/* Language Switcher */
+.lang-switch {
+  color: var(--text-muted) !important;
+  font-weight: 500 !important;
+}
+.lang-switch.active {
+  color: var(--primary) !important;
+  border-bottom: 2px solid var(--primary) !important;
+}
+
+/* Theme Toggle Icon */
+.theme-toggle {
+  color: var(--text-muted) !important;
+  cursor: pointer !important;
+}
+.theme-toggle:hover {
+  color: var(--primary) !important;
+}
+
+/* Utilities missing from prompt but required */
+.play-btn-icon {
+  background: var(--primary) !important;
+  color: var(--text-on-primary) !important;
+}
+.time-text {
+  color: var(--text-muted) !important;
+}
+.share-icon {
+  color: var(--text-muted) !important;
+  background: transparent !important;
+}
+.share-icon:hover {
+  color: var(--primary) !important;
+}
+
+/* ────────────────────────────────────────────────────────────────────────── */
 
 .no-scrollbar::-webkit-scrollbar {
   display: none;
@@ -72,8 +258,8 @@ button { cursor: pointer; outline: none; }
 }
 
 .toast {
-  background: var(--text);
-  color: var(--bg);
+  background: var(--text-body);
+  color: var(--bg-surface);
   padding: 10px 24px;
   border-radius: 99px;
   font-size: 14px;
@@ -84,7 +270,7 @@ button { cursor: pointer; outline: none; }
   gap: 8px;
   white-space: nowrap;
   animation: toast-slide-up 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-  border: 1px solid var(--track);
+  border: 1px solid var(--border-default);
 }
 
 .toast.hiding {
@@ -100,4 +286,3 @@ button { cursor: pointer; outline: none; }
   from { opacity: 1; transform: translateY(0) scale(1); }
   to { opacity: 0; transform: translateY(10px) scale(0.95); }
 }
-
