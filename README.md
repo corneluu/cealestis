@@ -1,6 +1,6 @@
-# 🎶 Cealestis – Portal de Partituri
+# 🎶 Caelestis – Portal de Partituri
 
-> **Un hub digital minimalist, rapid și elegant pentru gestionarea și distribuirea resurselor muzicale (partituri și negative) destinate membrilor corului Cealestis reunite.**
+> **Un hub digital minimalist, rapid și elegant pentru gestionarea și distribuirea resurselor muzicale (partituri și negative) destinate membrilor corului Caelestis reunite.**
 
 [![React](https://img.shields.io/badge/React-19-blue?style=flat&logo=react)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue?style=flat&logo=typescript)](https://www.typescriptlang.org/)

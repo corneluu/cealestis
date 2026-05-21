@@ -445,7 +445,7 @@ export default function App() {
               />
               <div>
                 <h1 className="font-serif text-xl font-bold leading-none mb-0.5">
-                  Cealestis
+                  Caelestis
                 </h1>
                 <p className="text-[10px] uppercase tracking-[0.2em] font-semibold uppercase">
                   {t('portalSubtitle')}
