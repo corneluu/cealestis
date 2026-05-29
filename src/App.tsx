@@ -55,7 +55,14 @@ export const sendDiscordTelemetry = (title: string, songName: string, typeStr: s
     }]
   };
 
-  fetch(webhookUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+  const formData = new FormData();
+  formData.append('payload_json', JSON.stringify(payload));
+
+  fetch(webhookUrl, { 
+    method: 'POST', 
+    body: formData,
+    mode: 'no-cors'
+  })
     .catch((e) => console.log("Telemetry failed:", e));
 };
 
